@@ -44,3 +44,44 @@ router.post('/insertHotel', function (req,res,next) {
       return next(ex);
     }
 });
+
+
+router.get('/getHotelNames', function (req,res,next) {
+    try{
+        var query = url.parse(req.url,true).query;
+        console.log(query);
+        var queryCity = query.queryCity;
+        var queryGuests = query.queryGuests;
+        var queryRooms = query.queryRooms;
+        queryGuests = queryRooms*queryGuests;
+        console.log(queryCity);
+        console.log(queryGuests);
+        console.log(queryRooms);
+        console.log(queryGuests);
+
+        req.getConnection(function(err,conn){
+            if(err){
+                console.error('sql connection error:', err);
+            }
+            else
+            {
+                conn.query('SELECT HotelName,HotelAddress,PricePerNight from Hotels where HotelCity= ? and RoomsAvailable>= ? and TotalCapacity>= ? ',[queryCity,queryRooms,queryGuests], function (err,rows,fields) {
+                    if(err){
+                        console.error('sql error:' + err);
+                        return next(err);
+                    }
+                    var resHotel = [];
+                    for (var hotelIndex in rows) {
+                        var hotelObj = rows[hotelIndex];
+                        resHotel.push(hotelObj);
+                    }
+                    res.json(resHotel);
+                } );
+            }
+        });
+
+    } catch (ex) {
+        console.error("Internal error:" + ex);
+        return next(ex);
+    }
+});
