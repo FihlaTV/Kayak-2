@@ -7,5 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "kafka-node": "^2.3.0",
+    "mysql": "^2.15.0",
+    "nodemon": "^1.12.1"
+  }
 }
