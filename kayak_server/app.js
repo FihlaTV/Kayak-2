@@ -30,11 +30,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 var index = require('./routes/index');
 var users = require('./routes/users')(app);
 var flights = require('./routes/flights');
+var hotels = require('./routes/hotels');
 
 
 app.use('/', index);
 //app.use('/users',users);
 app.use('/flights',flights);
+app.use('/hotels', hotels);
 
 
 //app.use('./public/uploads', express.static(path.join(__dirname, 'uploads')));
