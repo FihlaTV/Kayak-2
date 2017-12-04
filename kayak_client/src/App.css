@@ -1,4 +1,4 @@
-.App {
+/*.App {
   text-align: center;
 }
 
@@ -26,3 +26,31 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.logo {
+  display: inline;
+  float: left;
+  margin-left: 30px;
+  margin-right: 30px;
+  margin-top: 15px;
+}
+.header_123 {
++  background-color: #ffffff;
+}
+
+.navbar {
+  display: inline;
+}
+
+.nav-link {
+  margin-top: 35px;
+  margin-left: 30px;
+  color: white;
+  text-decoration: underline;
+}
+
+.nav {
+  background-color: black;
+  margin-top: 0 px;
+}
+*/

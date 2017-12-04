@@ -3,51 +3,40 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
+var session = require('express-session');
 var bodyParser = require('body-parser');
+var index = require('./routes/index');
+var users = require('./routes/users');
+var cars = require('./routes/cars');
+var hotels = require('./routes/hotels');
+var flights = require('./routes/flights');
+var analysis = require('./routes/analysis');
+var admin = require('./routes/admin');
 var cors = require('cors');
-
-
-var mysql = require('mysql');
 var app = express();
-
-app.use(cors());
-
-
+app.use(cors({credentials:true, origin: true}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-app.use(logger('dev'));
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-var index = require('./routes/index');
-var users = require('./routes/users')(app);
-var flights = require('./routes/flights');
-var hotels = require('./routes/hotels');
-
+app.use(logger('dev'));
+app.use(session({secret: 'ssshhhhh'
+    }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-//app.use('/users',users);
-app.use('/flights',flights);
+app.use('/users', users);
+app.use('/cars', cars);
 app.use('/hotels', hotels);
-
-
-//app.use('./public/uploads', express.static(path.join(__dirname, 'uploads')));
-
-app.use(function(req, res, next) { //allow cross origin requests
-    res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
-    res.header("Access-Control-Allow-Origin", "http://localhost");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
-
+app.use('/flights', flights);
+app.use('/analysis', analysis);
+app.use('/admin', admin);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -55,8 +44,6 @@ app.use(function(req, res, next) {
     err.status = 404;
     next(err);
 });
-
-
 
 // error handler
 app.use(function(err, req, res, next) {
@@ -68,6 +55,5 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error');
 });
-
 
 module.exports = app;

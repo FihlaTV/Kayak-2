@@ -1,94 +1,68 @@
+var ejs= require('ejs');
 var mysql = require('mysql');
-var pool = mysql.createPool({
-    connectionLimit: 100,
-    host     : 'localhost',
-    user     : 'root',
-    password : 'root',
-    database : 'kayak',
-    port	 : 3306,
-    debug: false
-});
+
 //Put your mysql configuration settings - user, password, database and port
+function getConnection(){
+	var connection = mysql.createConnection({
+	    host     : 'localhost',
+	    user     : 'root',
+	    password : 'root',
+	    database : 'test',
+	    port	 : 3306,
+	    Pooling  : true
+	});
+	return connection;
+}
+
+
+function InsertData(sqlQuery)
+{
+
+console.log("Query is:"+sqlQuery);
+
+// query is executing
+var connection = getConnection();
+
+connection.query(sqlQuery, function(err, rows, fields) {
+	if(err){
+		console.log("Hiii22");
+		console.log("ERROR: " + err.message);
+	}
+	else
+	{	// return err or result
+		console.log("Hiii33");
+		console.log("DB Results:"+rows);
+		//callback(err, rows);
+	}
+});
+console.log("Hiii444");
+console.log("\nConnection closed..");
+connection.end();
+
+}
 
 function fetchData(callback,sqlQuery){
 
-    console.log("\nSQL Query::"+sqlQuery);
+	console.log("\nSQL Query::"+sqlQuery);
 
-    pool.getConnection(function(err, connection) {
-        if (err) {
-            connection.release();
-            res.json({ "code": 100, "status": "Error in connection database" });
-            return;
-        }
+	var connection=getConnection();
 
-        connection.query(sqlQuery, function(err, rows, fields) {
-            if(err){
-                console.log("ERROR: " + err.message);
-            }
-            else
-            {	// return err or result
-                console.log("DB Results:"+rows);
-                callback(err, rows);
-            }
-        });
-        connection.release();
-    });
-
-
-    /*pool.getConnection(function(err, connection) {
-        if (err) {
-            connection.release();
-            res.json({ "code": 100, "status": "Error in connection database" });
-            return;
-
-
-
-        }
-
-
-
-        console.log("\nConnection closed..");
-        connection.end();
-        );*/
-
-}
-function insertData(callback,sqlQuery){
-
-    console.log("\nSQL Query::"+sqlQuery);
-
-    pool.getConnection(function(err, connection) {
-        if (err) {
-            connection.release();
-            res.json({ "code": 100, "status": "Error in connection database" });
-            return;
-        }
-
-        connection.query(sqlQuery, function(err, rows, fields) {
-            if(err){
-                console.log("ERROR: " + err.message);
-            }
-            else
-            {	// return err or result
-                console.log("DB Results:"+rows);
-                callback(err, rows);
-            }
-        });
-        connection.release();
-    });
-
-    /*connection.query(sqlQuery, function(err, rows, fields) {
-        if(err){
-            console.log("ERROR: " + err.message);
-        }
-        else
-        {	// return err or result
-            console.log("DB Results:"+rows);
-            callback(err, rows);
-        }
-    });*/
-    console.log("\nConnection closed..");
-    // connection.end();
+	connection.query(sqlQuery, function(err, rows, fields) {
+		if(err){
+			console.log("Hiii22");
+			console.log("ERROR: " + err.message);
+		}
+		else
+		{	// return err or result
+			console.log("Hiii33");
+			console.log("DB Results:"+rows);
+			callback(err, rows);
+		}
+	});
+	console.log("Hiii444");
+	console.log("\nConnection closed..");
+	connection.end();
 }
 
 exports.fetchData=fetchData;
-exports.insertData=insertData;
+exports.InsertData=InsertData;

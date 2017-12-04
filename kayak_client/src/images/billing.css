@@ -1,0 +1,128 @@
+.search-options {
+
+float:left;
+color:black;
+margin-top:30px;
+font-size: 16px;
+background-color: #f1f1f1;
+
+
+}
+
+#bid {
+
+	float:left;
+}
+
+#uid{
+
+	float:left;
+	margin-left: 90px;
+	text-align: centre;
+}
+#hname {
+
+	margin-left: 100px;
+	float:left;
+
+}
+#bdate {
+
+	float:left;
+	margin-left: 90px;
+
+}
+ #bamt {
+
+float:left;
+	margin-left: 90px;
+
+ }
+#table {
+
+	margin-top: 110px;
+}
+
+#table {
+  border-collapse: separate;
+  border-spacing: 50px 0;
+}
+
+.Hotel-billing-Info{
+
+    height: 1000px;
+	background-color: #f1f1f1;
+}
+.heading{
+
+	font-family: "Times New Roman", Times, serif;
+	
+
+	
+}
+#date {
+
+width:174px;
+height:28px; 
+border-style: blue;
+margin-left: 4px;
+border-radius: 8px;
+font-size: 15px;
+border: 2px solid #555555;
+
+
+}
+
+#date:hover {
+    background-color: #FF360B;
+}
+
+
+#search {
+
+	float:left;
+	height: 30px;
+	margin-top:30px;
+	margin-left:18px;
+	font-size: 14px;
+	border-radius: 10px;
+    border: 2px solid #555555;
+    
+}
+#search:hover {
+    background-color: #FF360B;
+}
+
+.dropdown:hover {
+
+background-color: #FF360B;
+
+}
+
+
+.dropdown {
+
+width:160px;
+height:29px; 
+border-style: solid;
+margin-left : 8px;
+border-radius: 8px;
+font-size: 15px;
+border: 2px solid #555555;
+
+
+}
+
+#or {
+
+font-size: 20px;
+background-color: #f1f1f1;
+margin-left: 15px;
+
+
+}
+.search-options {
+
+	background-color: #f1f1f1;
+}
+

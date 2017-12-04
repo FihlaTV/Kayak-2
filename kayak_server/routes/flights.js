@@ -1,122 +1,143 @@
 var express = require('express');
 var router = express.Router();
-var kafka = require('./kafka/client');
-var moment = require('moment');
-var math = require('mathjs');
-var mysql= require('./mysql');
-var url = require('url');
+var kafka = require('./../kafka/client');
 
-
-// router.use(fileUpload({preserveExtension:true}));
-
-function stringToDate(s) {
-    var dateParts = s.split(' ')[0].split('-');
-    var timeParts = s.split(' ')[1].split(':');
-    var d = new Date(dateParts[0], --dateParts[1], dateParts[2]);
-    d.setHours(timeParts[0], timeParts[1], timeParts[2])
-
-    return d
-}
-
-function dhm(t){
-    var cd = 24 * 60 * 60 * 1000,
-        ch = 60 * 60 * 1000,
-        d = Math.floor(t / cd),
-        h = Math.floor( (t - d * cd) / ch),
-        m = Math.round( (t - d * cd - h * ch) / 60000),
-        pad = function(n){ return n < 10 ? '0' + n : n; };
-    if( m === 60 ){
-        h++;
-        m = 0;
-    }
-    if( h === 24 ){
-        d++;
-        h = 0;
-    }
-    return [d, pad(h), pad(m)].join(':');
-}
-
-router.post('/api/add', function (req, res) {
-    console.log('add flight is being called');
-    console.log(req.body);
-    var flightName= req.body.flightName;
-    var timeTakeOff= req.body.timeTakeOff;
-    var timeLand= req.body.timeLand;
-    var durationMSec = stringToDate(timeLand) - stringToDate(timeTakeOff);
-    var duration = dhm(durationMSec);
-    var price = req.body.price;
-    var source = req.body.source;
-    var destination= req.body.destination;
-    var economyCapacity= req.body.economyCapacity;
-    var premiumEconomyCapacity= req.body.premiumEconomyCapacity;
-    var businessCapacity= req.body.businessCapacity;
-    var firstCapacity=req.body.firstCapacity;
-    console.log(flightName);
-    console.log(timeTakeOff);
-    console.log(timeLand);
-    console.log("duration");
-    console.log(duration);
-    console.log(price);
-    console.log(source);
-    console.log(destination);
-    console.log(economyCapacity);
-    console.log(premiumEconomyCapacity);
-    console.log(businessCapacity);
-    console.log(firstCapacity);
-    kafka.make_request('addFlight_topic', {"flightName":flightName, "timeTakeOff": timeTakeOff, "timeLand": timeLand, "duration": duration, "price": price, "source": source, "destination": destination, "economyCapacity": economyCapacity, "premiumEconomyCapacity": premiumEconomyCapacity, "businessCapacity": businessCapacity, "firstCapacity": firstCapacity}, function (err, results) {
-        console.log('in result');
-        console.log(results);
-        if (err) {
-            throw err;
-            return;
+router.post('/addFlight', function(req, res, next) {
+    var flightDetail = {
+        flight_id:req.body.flight_id,
+        flight_carrier_name:req.body.flight_carrier_name,
+        flight_src_city:req.body.flight_src_city,
+        flight_destination_city:req.body.flight_destination_city,
+        flight_duration:req.body.flight_duration,
+        flight_operational_day:req.body.flight_operational_day,
+        flight_departure_time:req.body.flight_departure_time,
+        flight_price:req.body.flight_price
+    };
+    kafka.make_request('add_flight', flightDetail, function(err,result){
+        console.log("in result");
+        if(err){
+            console.log(err);
         }
-        else {
-            if(results.code==='204'){
-                res.send({status: 204,message:"Flight Added Successfully!!"});
+        else{
+            if(result === 'err'){
+                res.send({status:408,message:"Oopss!! Failed to add flight: "+flightDetail.flight_id+"..Try again!!!"})
             }
             else{
-                res.send({status: 408,message:"Issue with the entry!!"});
+                res.send({status:204,result:result,message:"Flight "+flightDetail.flight_id +" added successfully:"});
             }
-
         }
     });
 });
 
+router.post('/searchFlights', function(req, res, next) {
+    console.log(req.body.flight_start_date);
+    var d = new Date(req.body.flight_start_date);
+    d.setHours(d.getHours() + 8);
+    console.log("newD is"+d);
+    var day = d.getDay();
+    console.log("its date in body"+d+"day"+day);
+    var flightDetail = {
+        "flight_src_city": req.body.flight_src_city,
+        "flight_destination_city":req.body.flight_destination_city,
+        "flight_operational_day":day
+    };
+    kafka.make_request('search_flight',flightDetail, function(err,result){
+        if(err){
+            console.log(err);
 
-router.get('/api/getFlights', function (req, res) {
-    console.log('get flights is being called');
-    try{
-        var query = url.parse(req.url,true).query;
-        console.log(query);
-        var source = query.source;
-        var destination = query.destination;
-        var way = query.way;
-        var takeOffDate = query.takeOffDate;
-        var returnDate = query.returnDate;
-        var pEconomy = query.pEconomy;
-        var pPremiumEconomy = query.pPremiumEconomy;
-        var pBusiness = query.pBusiness;
-        var pFirst = query.pFirst;
-        kafka.make_request('searchFlight_topic', {"source":source, "destination": destination, "way": way, "takeOffDate": takeOffDate, "returnDate": returnDate, "pEconomy": pEconomy, "pPremiumEconomy": pPremiumEconomy, "pBusiness": pBusiness, "pFirst": pFirst}, function (err, results) {
-            console.log('in result');
-            console.log(results);
-            if (err) {
-                throw err;
-                return;
+        }
+        else{
+            console.log("Result:"+result.length);
+            if(result === 'err'){
+                res.status(404).json({message:"Oopss!! Failed to find flight on required day..Try again!!!"});
+            }
+            if( result.length === 0){
+                res.status(404).json({message:"Oopss!! Failed to find flight on required day..Try again!!!"});
             }
             else {
-                res.send(results.value);
+                res.send({status:200,result:result});
             }
-        });
-
-
-
-    } catch (ex) {
-        console.error("Internal error:" + ex);
-        return next(ex);
-    }
-
+        }
+    });
 });
+
+router.post('/editFlight', function(req, res, next) {
+    var flightDetail = {
+        flight_id:req.body.flight_id,
+        flight_carrier_name:req.body.flight_carrier_name,
+        flight_src_city:req.body.flight_src_city,
+        flight_destination_city:req.body.flight_destination_city,
+        flight_duration:req.body.flight_duration,
+        flight_operational_day:req.body.flight_operational_day,
+        flight_departure_time:req.body.flight_departure_time,
+        flight_price:req.body.flight_price
+    };
+    kafka.make_request('edit_flight', flightDetail, function(err,result){
+        if(err){
+            console.log(err);
+        }
+        else{
+            console.log(result);
+            if(result === 'err'){
+                res.send({status:408,message:"Oopss!! Failed to edit flight: "+flightDetail.flight_id+" try again!!!"})
+            }
+            else if( result === null || result.nModified === 0){
+                res.send({status:408,message:"Oopss!! Failed to edit flight: "+flightDetail.flight_id+" try again!!!"})
+            }
+            else {
+                res.send({status:200,message:"Flight "+flightDetail.flight_id+ " edited succesfully!!"});
+            }
+        }
+    });
+});
+
+router.post('/deleteFlight', function(req, res, next) {
+    console.log(req.body);
+    var flightDetail = {
+        flight_id:req.body.flight_id
+    };
+    kafka.make_request('delete_flight', flightDetail, function(err,result){
+        if(err){
+            console.log(err);
+        }
+        else{
+            if(result === 'err'){
+                res.send({status:408,message:"Oopss!! Failed to delete flight: "+flightDetail.flight_id+"..Try again!!!"})
+            }
+            else if( result === null){
+                res.send({status:408,message:"Oopss!! Failed to delete flight: "+flightDetail.flight_id+"..Try again!!!"})
+            }
+            else {
+                res.send({status:200,message:"Flight "+flightDetail.flight_id +" deleted succesfully!!"});
+            }
+        }
+    });
+});
+
+router.post('/bookFlight', function(req, res, next) {
+    var flightDetail = {
+        user_id:req.body.user_id,
+        booking_date:req.body.booking_date,
+        booking_amount:req.body.booking_amount,
+        flightfromdate:req.body.flightfromdate,
+        flighttodate:req.body.flighttodate,
+        flight_passengers: req.body.flight_passengers,
+        flight_name:req.body.flight_name,
+        flight_src_city:req.body.flight_src_city,
+        flight_destination_city:req.body.flight_destination_city,
+        flight_id:req.body.flight_id
+    };
+    kafka.make_request('book_flight',flightDetail, function(err,result){
+        if(err){
+            console.log(err);
+            res.status(408).json({message:"Failed to book a flight: "+flightDetail.flight_name+" try again!!!"})
+        }
+        else{
+            res.status(200).json({result:result,message:"successfully booked flight:"+flightDetail.flight_name});
+        }
+    });
+});
+
 
 
 
