@@ -17,6 +17,9 @@ Features:
 • Book Flight/Car/Hotel</br>
 • View Bookings</br>
 • Admin Dashboard</br>
+• Add flight/car/hotel by admin</br>
+• Edit flight/car/hotel details by admin</br>
+• See flight/car/hotel billing info</br>
 • View Sales Overview</br>
 • Top 10 flights/cars/hotels based on sales/certain properties</br>
 • User Tracking Graph
