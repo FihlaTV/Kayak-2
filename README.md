@@ -47,44 +47,50 @@ Kafka
 
 Below are some screenshots demonstrating the application:
 
-### Login Page
+### Welcome/Flight Search Page
 ![](images/1.png)
 
-### Register Page
+### Hotel Search Page
 ![](images/2.png)
 
-### Welcome Page
+### Car Search Page
 ![](images/3.png)
 
-### Upload file
+### Sign Up/Sign In
 ![](images/4.png)
 
-### Create directory
+### Hotel Results Page with filters
 ![](images/5.png)
 
-### List files/directories
+### Hotel Booking Page
 ![](images/6.png)
 
-### Star file/directory
+### Flight Results Page with filters
 ![](images/7.png)
 
-### Remove file/directory
+### Flight Booking Page
 ![](images/8.png)
 
-### See Personal Info
+### Car Results Page with filters
 ![](images/9.png)
 
+### Car Booking Page
 ![](images/10.png)
 
-### Edit Personal Info
+### Edit User Profile
 ![](images/11.png)
 
-### Share file/directory
+### Manage Bookings
 ![](images/12.png)
 
-### List shared files
+### Add Car/Flight/Hotel
 ![](images/13.png)
 
-### See activity logs
+### See Car/Flight/Hotel Billing Info
 ![](images/14.png)
 
+### Admin Dashboard
+![](images/15.png)
+
+### Graphs based on perperties
+![](images/16.png)
